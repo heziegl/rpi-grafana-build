@@ -43,6 +43,6 @@ RUN	cd /gopath1.5/src/github.com/grafana/grafana \
 RUN     cd /gopath1.5/src/github.com/grafana/grafana \
         && go run build.go package
 
-VOLUME	/dist2
+VOLUME	/dist
 
-CMD	if [ -d /dist2 ]; then cp /gopath1.5/src/github.com/grafana/grafana/dist/* /dist2; fi
+CMD	if [ -d /dist ]; then cp /gopath1.5/src/github.com/grafana/grafana/dist/* /dist; fi
