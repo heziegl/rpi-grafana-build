@@ -17,32 +17,31 @@ RUN	curl -sLS https://apt.adafruit.com/add |bash \
 RUN     gem install fpm
 
 
-# FIXME: hack for error "no buildable Go source files in /gopath1.5/src/github.com/grafana/grafana"
-RUN 	cd /gopath1.5 \
-	&& go get -t -d github.com/grafana/grafana; exit 0
+
+# FIXME: exit 0 hack for error "no buildable Go source files in /gopath1.5/src/github.com/grafana/grafana"
+WORKDIR $GOPATH
+RUN 	go get -t -d github.com/grafana/grafana; exit 0
+
+# set working dir
+WORKDIR $GOPATH/src/github.com/grafana/grafana
 
 # get specific version
-ARG	GRAFANA_TAG
-RUN	cd /gopath1.5/src/github.com/grafana/grafana \
-	&& git checkout tags/$GRAFANA_TAG
+ARG	GRAFANA_VERSION
+RUN	git checkout tags/v$GRAFANA_VERSION
 
 # go setup
-RUN     cd /gopath1.5/src/github.com/grafana/grafana \
-        && go run build.go setup \
+RUN     go run build.go setup \
         && godep restore
 
-RUN	cd /gopath1.5/src/github.com/grafana/grafana \
-	&& npm install -g grunt-cli
+RUN	npm install -g grunt-cli
 
-RUN	cd /gopath1.5/src/github.com/grafana/grafana \
-	&& npm install
+RUN	npm install
 
-RUN	cd /gopath1.5/src/github.com/grafana/grafana \
-	&& go run build.go build
+RUN	go run build.go build
 
-RUN     cd /gopath1.5/src/github.com/grafana/grafana \
-        && go run build.go package
+RUN     go run build.go package
+
 
 VOLUME	/dist
 
-CMD	if [ -d /dist ]; then cp /gopath1.5/src/github.com/grafana/grafana/dist/* /dist; fi
+CMD	if [ -d /dist ]; then cp $GOPATH/src/github.com/grafana/grafana/dist/* /dist; fi
