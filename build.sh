@@ -1,7 +1,5 @@
 #! /bin/bash
 
-#sudo docker build -t rpi-grafana-build --rm=true .
-
 # grafana git tag to build
 VERSION=2.6.0
 
