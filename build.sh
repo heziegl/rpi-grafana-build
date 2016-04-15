@@ -1,7 +1,9 @@
 #! /bin/bash
 
-# grafana git tag to build
-VERSION=2.6.0
+# grafana git tag to build, or "master" to build master
+#VERSION=2.6.0
+#VERSION=3.0-beta4
+VERSION=master-$(date +"%Y%m%d_%H%M")
 
 # host dir to copy result to
 DIST_DIR=dist-$VERSION
