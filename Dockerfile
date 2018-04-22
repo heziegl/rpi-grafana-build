@@ -1,4 +1,5 @@
-FROM resin/rpi-raspbian:jessie
+#FROM resin/rpi-raspbian:jessie
+FROM resin/artik710-golang:1.9.4
 
 # install dependencies
 RUN	apt-get update \
@@ -6,23 +7,6 @@ RUN	apt-get update \
 
 WORKDIR	~
 
-
-# install go
-ENV     GOPATH /gopath
-RUN	wget https://github.com/hypriot/golang-armbuilds/releases/download/v1.5.2/go1.5.2.linux-armv7.tar.gz && \
-	tar -xzf go1.5.2.linux-armv7.tar.gz -C /usr/local && \
-	mkdir -p $GOPATH
-ENV	PATH /usr/local/go/bin:$GOPATH/bin:$PATH
-ENV	GOARM 6
-
-# install godep
-RUN	go get github.com/tools/godep
-
-
-# install phantomjs 1.9.8
-#RUN     cd /usr/local/bin \
-#        && wget https://github.com/piksel/phantomjs-raspberrypi/raw/master/bin/phantomjs \
-#        && chmod a+x phantomjs
 
 # install phantomjs 2.1.1
 RUN    wget https://github.com/timstanley1985/phantomjs-linux-armv6l/raw/master/phantomjs-2.1.1-linux-armv6l.tar.gz && \
@@ -34,11 +18,7 @@ RUN    wget https://github.com/timstanley1985/phantomjs-linux-armv6l/raw/master/
 
 
 
-# install node 0.12.6
-#RUN     curl -sLS https://apt.adafruit.com/add |bash \
-#        && apt-get install -qy node
-
-ENV    NODE_VER 4.4.1
+ENV    NODE_VER 8.10.0
 RUN    wget https://nodejs.org/dist/v$NODE_VER/node-v$NODE_VER-linux-armv7l.tar.gz && \
        tar -xf node-v$NODE_VER-linux-armv7l.tar.gz && \
        cd node-v$NODE_VER-linux-armv7l && \
@@ -46,11 +26,6 @@ RUN    wget https://nodejs.org/dist/v$NODE_VER/node-v$NODE_VER-linux-armv7l.tar.
        cd .. && \
        rm -r node-v$NODE_VER-linux-armv7l && \
        rm  node-v$NODE_VER-linux-armv7l.tar.gz
-
-
-
-# install fpm
-RUN     gem install fpm
 
 
 
@@ -70,16 +45,24 @@ WORKDIR $GOPATH/src/github.com/grafana/grafana
 RUN	git checkout tags/v$GRAFANA_VERSION
 
 # go setup
-RUN     go run build.go setup && \
-        godep restore
+#RUN	go run build.go setup
+#RUN	npm install -g yarn
+#RUN	yarn install --pure-lockfile
+#RUN	npm run build
 
-RUN	npm install -g grunt-cli
 
-RUN	npm install
 
-RUN	go run build.go build
+# install fpm (for *.deb + *.rpm creation)
+RUN     gem install fpm
 
+# go setup
+RUN     go run build.go setup
+RUN     go run build.go build
+
+# build + package
 RUN     go run build.go package
+
+
 
 
 VOLUME	/dist

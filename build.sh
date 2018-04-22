@@ -4,7 +4,8 @@ set -e
 
 # grafana git tag to build, or "master" to build master
 #VERSION=master-$(date +"%Y%m%d_%H%M")
-VERSION=3.1.1
+#VERSION=3.1.1
+VERSION=4.6.3
 
 # host dir to copy result to
 DIST_DIR=dist-$VERSION
